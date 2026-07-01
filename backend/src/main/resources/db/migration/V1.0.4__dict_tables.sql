@@ -26,8 +26,3 @@ CREATE TABLE IF NOT EXISTS `t_dict_data` (
     PRIMARY KEY (`id`),
     KEY `idx_dict_code` (`dict_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='字典数据表';
-
--- 初始字典数据：素材类型
-INSERT INTO `t_dict` (`dict_code`, `dict_name`, `remark`) VALUES ('content_type', '素材类型', '内容库素材的类型分类');
-INSERT INTO `t_dict_data` (`dict_code`, `label`, `value`, `sort`) VALUES ('content_type', '推文', 'post', 1);
-INSERT INTO `t_dict_data` (`dict_code`, `label`, `value`, `sort`) VALUES ('content_type', '文章', 'article', 2);
