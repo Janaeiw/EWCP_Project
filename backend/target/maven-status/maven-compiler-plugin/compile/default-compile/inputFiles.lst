@@ -7,6 +7,7 @@
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/config/MybatisPlusConfig.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/config/MybatisPlusMetaHandler.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/config/SecurityConfig.java
+/Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/config/WxCpConfig.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/controller/AuthController.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/controller/library/ImageController.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/controller/system/ContentController.java
@@ -14,6 +15,9 @@
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/controller/system/PermissionController.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/controller/system/RoleController.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/controller/system/UserController.java
+/Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/controller/wx/MomentController.java
+/Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/dto/moment/CreateMomentReq.java
+/Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/dto/moment/MomentPageReq.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/entity/Content.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/entity/Dict.java
 /Users/janaeiw/Desktop/project/wisight/EWCP_Project/backend/src/main/java/com/ewcp/entity/DictData.java

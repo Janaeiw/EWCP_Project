@@ -41,3 +41,12 @@ server:
 jwt:
   secret: ewcp-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
   expiration: 86400000  # 24小时 (毫秒)
+
+# 企业微信配置
+wx:
+  cp:
+    corp-id: your-corp-id
+    corp-secret: your-corp-secret
+    token: your-callback-token
+    aes-key: your-aes-key
+    agent-id: 1000002

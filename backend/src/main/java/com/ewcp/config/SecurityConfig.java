@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/system/**").permitAll()  // 临时放开，后续加权限校验
                         .requestMatchers("/api/library/**").permitAll()  // 临时放开，后续加权限校验
+                        .requestMatchers("/api/wx/**").permitAll()  // 临时放开，后续加权限校验
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
