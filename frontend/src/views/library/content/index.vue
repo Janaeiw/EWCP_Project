@@ -25,6 +25,7 @@ import {
 import { uploadImage } from "@/api/common/image";
 import { LinkCard } from "@/components/LinkCard";
 import { useDictStoreHook } from "@/store/modules/dict";
+import { isValidUrl } from "@/utils/validate";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import type {
   IDomEditor,
@@ -212,7 +213,7 @@ const rules = reactive<FormRules>({
     },
     {
       validator: (_rule, value: string, callback) => {
-        if (value && !/^https?:\/\/.+/.test(value)) {
+        if (value && !isValidUrl(value)) {
           callback(new Error("请输入有效的链接地址"));
         } else {
           callback();
@@ -224,8 +225,11 @@ const rules = reactive<FormRules>({
   title: [{ required: true, message: "请输入标题", trigger: "blur" }],
   image: [
     {
+      required: true,
       validator: (_rule, value: string, callback) => {
-        if (value && !/^https?:\/\/.+/.test(value)) {
+        if (!value && !uploadedImageUrl.value) {
+          callback(new Error("请上传或输入图片"));
+        } else if (value && !isValidUrl(value)) {
           callback(new Error("请输入有效的图片链接"));
         } else {
           callback();
@@ -503,8 +507,11 @@ onMounted(() => {
                 :limit="1"
                 list-type="picture-card"
                 accept="image/*"
+                drag
               >
-                点击上传
+                <div class="el-upload__text">
+                  将图片拖到此处，或<em>点击上传</em>
+                </div>
               </el-upload>
               <el-input
                 v-model="form.image"
@@ -545,8 +552,11 @@ onMounted(() => {
                 :limit="1"
                 list-type="picture-card"
                 accept="image/*"
+                drag
               >
-                点击上传
+                <div class="el-upload__text">
+                  将图片拖到此处，或<em>点击上传</em>
+                </div>
               </el-upload>
               <el-input
                 v-model="form.image"

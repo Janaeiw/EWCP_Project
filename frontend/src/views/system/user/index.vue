@@ -11,6 +11,7 @@ import {
   type UserItem
 } from "@/api/system/user";
 import { getRoleList, type RoleItem } from "@/api/system/role";
+import { isValidUrl, isValidEmail, isValidPhone } from "@/utils/validate";
 
 defineOptions({ name: "SystemUser" });
 
@@ -102,7 +103,7 @@ const rules: FormRules = {
   avatar: [
     {
       validator: (_rule, value: string, callback) => {
-        if (value && !/^https?:\/\/.+/.test(value)) {
+        if (value && !isValidUrl(value)) {
           callback(new Error("请输入有效的链接地址"));
         } else {
           callback();
@@ -114,7 +115,7 @@ const rules: FormRules = {
   email: [
     {
       validator: (_rule, value: string, callback) => {
-        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        if (value && !isValidEmail(value)) {
           callback(new Error("邮箱格式不正确"));
         } else {
           callback();
@@ -126,7 +127,7 @@ const rules: FormRules = {
   phone: [
     {
       validator: (_rule, value: string, callback) => {
-        if (value && !/^1[3-9]\d{9}$/.test(value)) {
+        if (value && !isValidPhone(value)) {
           callback(new Error("手机号格式不正确"));
         } else {
           callback();
