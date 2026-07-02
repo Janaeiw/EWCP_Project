@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/library/image")
+@RequestMapping("/api/image")
 @RequiredArgsConstructor
 public class ImageController {
 
@@ -24,7 +24,7 @@ public class ImageController {
         Long id = systemService.uploadImage(file);
         Map<String, Object> data = new HashMap<>();
         data.put("id", id);
-        data.put("url", "/api/library/image/" + id);
+        data.put("url", "/api/image/" + id);
         return R.ok(data);
     }
 

@@ -17,7 +17,7 @@ import {
   deleteContent,
   type ContentItem
 } from "@/api/library/content";
-import { uploadImage } from "@/api/library/image";
+import { uploadImage } from "@/api/common/image";
 import { LinkCard } from "@/components/LinkCard";
 import { useDictStoreHook } from "@/store/modules/dict";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
@@ -95,28 +95,32 @@ const handleCurrentChange = (val: number) => {
 
 // ===== 封面图片上传 =====
 const coverFileList = ref<{ name: string; url: string }[]>([]);
+const uploadedImageUrl = ref("");
 
 const handleCoverUpload: UploadProps["httpRequest"] = async options => {
   try {
     const res = await uploadImage(options.file as File);
     if (res.code === 0) {
-      form.image = res.data.url;
+      uploadedImageUrl.value = res.data.url;
       coverFileList.value = [
         { name: (options.file as File).name, url: res.data.url }
       ];
+      formRef.value?.clearValidate("image");
       options.onSuccess(res.data);
     } else {
+      // @ts-expect-error element-plus internal type UploadAjaxError not exported
       options.onError(new Error(res.msg));
       ElMessage.error(res.msg);
     }
   } catch (e) {
-    options.onError(e as Error);
+    // @ts-expect-error element-plus internal type UploadAjaxError not exported
+    options.onError(e instanceof Error ? e : new Error("上传失败"));
     ElMessage.error("上传失败");
   }
 };
 
 const handleCoverRemove = () => {
-  form.image = "";
+  uploadedImageUrl.value = "";
   coverFileList.value = [];
 };
 
@@ -237,23 +241,29 @@ const handleAdd = () => {
     status: 1
   });
   coverFileList.value = [];
+  uploadedImageUrl.value = "";
   dialogVisible.value = true;
 };
 
 const handleEdit = (row: ContentItem) => {
   dialogTitle.value = "编辑内容";
   dialogTab.value = row.type;
+  const existingImage = row.image || "";
+  const isUploaded = existingImage.startsWith("/api/image/");
   Object.assign(form, {
     id: row.id,
     type: row.type,
     link: row.link || "",
     title: row.title,
     description: row.description || "",
-    image: row.image || "",
+    image: isUploaded ? "" : existingImage,
     content: row.content || "",
     status: row.status
   });
-  coverFileList.value = row.image ? [{ name: "封面图", url: row.image }] : [];
+  uploadedImageUrl.value = isUploaded ? existingImage : "";
+  coverFileList.value = isUploaded
+    ? [{ name: "封面图", url: existingImage }]
+    : [];
   dialogVisible.value = true;
 };
 
@@ -267,9 +277,13 @@ watch(dialogVisible, val => {
 
 const handleSubmit = async () => {
   await formRef.value?.validate();
+  const submitData = {
+    ...form,
+    image: form.image || uploadedImageUrl.value
+  };
   try {
     const api = form.id ? updateContent : createContent;
-    const res = await api(form);
+    const res = await api(submitData);
     if (res.code === 0) {
       ElMessage.success(form.id ? "修改成功" : "新增成功");
       dialogVisible.value = false;
