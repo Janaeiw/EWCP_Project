@@ -1,22 +1,14 @@
 # FRP 客户端配置 - 本地开发穿透
 # 用法: frpc -c frpc.toml
-# 文档: https://github.com/fatedier/frp
 
-[auth]
-token = "your-frp-token"  # 替换为 frps 端配置的 token
+auth.token = "wisight2002"
 
-[transport]
-server_addr = "x.x.x.x"  # 替换为 frps 服务器 IP 或域名
-server_port = 7000         # frps 服务端口（默认 7000）
+serverAddr = "117.50.7.245"
+serverPort = 7000
 
 [[proxies]]
-name = "ewcp-backend"
-type = "https"             # HTTPS 穿透（frps 端需配置 SSL 证书）
-custom_domains = ["test.wizone.work"]
-[proxies.plugin]
-type = "https2http"
-local_addr = "127.0.0.1:8080"  # 本地 Spring Boot 后端地址
-# 如 frps 端无 SSL 证书，改用下方 HTTP 代理模式：
-# type = "http"
-# custom_domains = ["test.wizone.work"]
-# local_port = 8080
+name = "tcp-7001"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 8080
+remotePort = 7001

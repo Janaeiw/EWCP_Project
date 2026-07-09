@@ -44,7 +44,7 @@ FRONTEND_PID=$!
 echo ""
 echo "后端: http://localhost:8080"
 echo "前端: http://localhost:8848"
-[[ -n "$FRPC_PID" ]] && echo "FRP:  https://test.wizone.work (企微回调: https://test.wizone.work/api/wx/callback)"
+[[ -n "$FRPC_PID" ]] && echo "FRP: https://test.wizone.work (企微回调: http://test.wizone.work:7001/api/wx/callback)"
 echo "按 Ctrl+C 停止所有服务"
 echo ""
 

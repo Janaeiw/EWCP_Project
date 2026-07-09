@@ -59,7 +59,9 @@ export const getLogin = (data?: object) => {
         success: res.code === 0,
         data: {
           ...res.data,
-          refreshToken: res.data?.accessToken ?? ""
+          refreshToken: res.data?.accessToken
+            ? `${res.data.accessToken}Refresh`
+            : ""
         }
       };
       return result;
