@@ -45,8 +45,8 @@ jwt:
 # 企业微信配置
 wx:
   cp:
-    corp-id: your-corp-id
-    corp-secret: your-corp-secret
-    token: your-callback-token
-    aes-key: your-aes-key
-    agent-id: 1000002
+    corp-id: ww9c5c9d159dc58c87
+    corp-secret: bQW-LqZvVfgR088_d344tzWPSxPrD55hWgogrZr8G3U
+    token: Ix5a5T3SNFRHIRaYsrKdxzOE
+    aes-key: tG8OiAWsyfjkYphBddN8wJkSJMSDFul7tyIzqklaKk3
+    agent-id: 1000112

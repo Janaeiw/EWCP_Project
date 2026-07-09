@@ -50,7 +50,7 @@ config.setCorpId("your-corp-id");
 config.setCorpSecret("your-corp-secret");
 config.setToken("your-callback-token");
 config.setAesKey("your-aes-key");
-config.setAgentId(1000002);  // 应用的agentId
+config.setAgentId(1000112);  // 应用的agentId
 
 // 然后注入到 WxCpService
 WxCpService cpService = new WxCpServiceImpl();
