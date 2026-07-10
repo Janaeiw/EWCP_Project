@@ -1,1 +1,1 @@
-# EWCP_Project
+# weixin-cp-project
