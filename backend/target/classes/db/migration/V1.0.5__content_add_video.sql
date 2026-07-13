@@ -1,1 +1,0 @@
-ALTER TABLE `t_content` ADD COLUMN `video` VARCHAR(500) DEFAULT NULL COMMENT '视频链接' AFTER `image`;
