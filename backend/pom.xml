@@ -12,10 +12,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.ewcp</groupId>
-    <artifactId>ewcp-backend</artifactId>
+    <groupId>com.wecorp</groupId>
+    <artifactId>wecorp-backend</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>ewcp-backend</name>
+    <name>wecorp-backend</name>
     <description>企业微信营销应用 - 后端</description>
 
     <properties>

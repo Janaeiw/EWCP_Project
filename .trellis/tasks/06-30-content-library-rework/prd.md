@@ -73,7 +73,7 @@ Content 实体新增 `link` 字段，其余接口不变。
 
 ## 文件清单
 
-### 后端（backend/src/main/java/com/ewcp/）
+### 后端（backend/src/main/java/com/wecorp/）
 - entity/Content.java — 新增 link 字段
 - entity/Image.java — 新实体
 - mapper/ImageMapper.java — 新 Mapper

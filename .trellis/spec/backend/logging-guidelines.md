@@ -23,7 +23,7 @@ Spring Boot 默认 Logback，通过 SLF4J 门面调用。
 @Aspect
 @Component
 public class ApiLogAspect {
-    @Around("execution(* com.ewcp.controller..*.*(..))")
+    @Around("execution(* com.wecorp.controller..*.*(..))")
     public Object logApi(ProceedingJoinPoint pjp) {
         log.info(">>> {} {} | params: {}", request.getMethod(),
                  request.getRequestURI(), pjp.getArgs());

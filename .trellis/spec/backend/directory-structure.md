@@ -11,7 +11,7 @@
 ```
 src/
 ├── main/
-│   ├── java/com/ewcp/
+│   ├── java/com/wecorp/
 │   │   ├── config/           # Spring @Configuration 类
 │   │   │   ├── RedisConfig.java
 │   │   │   ├── WxJavaConfig.java
@@ -54,7 +54,7 @@ src/
 │       └── db/migration/             # SQL migration 脚本
 │
 ├── test/
-│   └── java/com/ewcp/
+│   └── java/com/wecorp/
 │       ├── controller/       # Controller 测试（@WebMvcTest）
 │       ├── service/          # Service 测试（@SpringBootTest）
 │       └── mapper/           # Mapper 测试（@MybatisTest）

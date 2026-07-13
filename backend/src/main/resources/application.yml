@@ -1,9 +1,9 @@
 spring:
   application:
-    name: ewcp-backend
+    name: wecorp-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/ewcp?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/wecorp?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -46,7 +46,7 @@ server:
 
 # JWT 配置
 jwt:
-  secret: ewcp-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
+  secret: wecorp-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
   expiration: 86400000  # 24小时 (毫秒)
 
 # 企业微信配置
