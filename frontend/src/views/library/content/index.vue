@@ -20,6 +20,7 @@ import {
   createContent,
   updateContent,
   deleteContent,
+  sendContentToMoment,
   type ContentItem
 } from "@/api/library/content";
 import { uploadImage } from "@/api/common/image";
@@ -328,6 +329,24 @@ const handleDelete = (row: ContentItem) => {
   });
 };
 
+const handleSendMoment = async (row: ContentItem) => {
+  try {
+    await ElMessageBox.confirm(
+      `确定要将「${row.title}」发送到企微朋友圈吗？`,
+      "发送朋友圈",
+      { type: "info", confirmButtonText: "发送", cancelButtonText: "取消" }
+    );
+  } catch {
+    return; // 用户取消
+  }
+  const res = await sendContentToMoment(row.id);
+  if (res.code === 0) {
+    ElMessage.success("朋友圈任务创建成功");
+  } else {
+    ElMessage.error(res.msg || "发送失败");
+  }
+};
+
 onMounted(() => {
   fetchData();
 });
@@ -421,10 +440,13 @@ onMounted(() => {
           min-width="160"
           align="center"
         />
-        <el-table-column label="操作" width="150" fixed="right" align="center">
+        <el-table-column label="操作" width="200" fixed="right" align="center">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleEdit(row)">
               编辑
+            </el-button>
+            <el-button link type="warning" @click="handleSendMoment(row)">
+              发朋友圈
             </el-button>
             <el-button link type="danger" @click="handleDelete(row)">
               删除

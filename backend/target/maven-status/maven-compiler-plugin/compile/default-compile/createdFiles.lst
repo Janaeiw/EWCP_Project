@@ -1,6 +1,7 @@
 com/ewcp/controller/AuthController$LoginDTO.class
 com/ewcp/service/impl/UserServiceImpl.class
 com/ewcp/config/SecurityConfig.class
+com/ewcp/common/utils/WxMediaUtils.class
 com/ewcp/dto/moment/MomentPageReq.class
 com/ewcp/controller/system/DictController.class
 com/ewcp/mapper/DictDataMapper.class

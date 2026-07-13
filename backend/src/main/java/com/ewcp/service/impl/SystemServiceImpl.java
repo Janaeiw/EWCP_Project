@@ -268,6 +268,11 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    public Content getContentById(Long id) {
+        return contentMapper.selectById(id);
+    }
+
+    @Override
     public void createContent(Content content) {
         contentMapper.insert(content);
     }

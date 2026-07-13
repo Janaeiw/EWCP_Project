@@ -50,6 +50,8 @@ public interface SystemService {
 
     Page<Content> getContentPage(int pageNum, int pageSize, String type, String title, Integer status);
 
+    Content getContentById(Long id);
+
     void createContent(Content content);
 
     void updateContent(Content content);

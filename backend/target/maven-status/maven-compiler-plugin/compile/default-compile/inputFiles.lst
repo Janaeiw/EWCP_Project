@@ -3,6 +3,7 @@
 /Users/janaeiw/Desktop/project/wisight/weixin-cp-project/backend/src/main/java/com/ewcp/common/exception/GlobalExceptionHandler.java
 /Users/janaeiw/Desktop/project/wisight/weixin-cp-project/backend/src/main/java/com/ewcp/common/result/R.java
 /Users/janaeiw/Desktop/project/wisight/weixin-cp-project/backend/src/main/java/com/ewcp/common/utils/JwtUtils.java
+/Users/janaeiw/Desktop/project/wisight/weixin-cp-project/backend/src/main/java/com/ewcp/common/utils/WxMediaUtils.java
 /Users/janaeiw/Desktop/project/wisight/weixin-cp-project/backend/src/main/java/com/ewcp/config/DataInitializer.java
 /Users/janaeiw/Desktop/project/wisight/weixin-cp-project/backend/src/main/java/com/ewcp/config/MybatisPlusConfig.java
 /Users/janaeiw/Desktop/project/wisight/weixin-cp-project/backend/src/main/java/com/ewcp/config/MybatisPlusMetaHandler.java

@@ -42,3 +42,10 @@ export const updateContent = (data: Partial<ContentItem>) => {
 export const deleteContent = (id: number) => {
   return http.request<ApiResult<void>>("delete", `/api/library/content/${id}`);
 };
+
+export const sendContentToMoment = (id: number) => {
+  return http.request<ApiResult<any>>(
+    "post",
+    `/api/library/content/send-moment/${id}`
+  );
+};
