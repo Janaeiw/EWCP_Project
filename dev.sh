@@ -37,7 +37,7 @@ JAVA_HOME=/usr/local/opt/openjdk@17 mvn spring-boot:run &
 BACKEND_PID=$!
 
 echo "=== 启动前端 ==="
-cd "$PROJECT_DIR/frontend"
+cd "$PROJECT_DIR/frontend/web-admin"
 pnpm dev &
 FRONTEND_PID=$!
 
