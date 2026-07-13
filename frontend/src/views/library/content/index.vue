@@ -595,8 +595,7 @@ onMounted(() => {
                 </div>
               </el-upload>
               <div class="text-xs text-gray-400 mt-1">
-                支持 JPG / PNG 格式，文件大小不超过
-                10MB，长边≤10800px，短边≤1080px。
+                支持 JPG / PNG 格式，文件大小不超过 10MB。
               </div>
             </div>
           </el-form-item>
@@ -639,8 +638,7 @@ onMounted(() => {
                 </div>
               </el-upload>
               <div class="text-xs text-gray-400 mt-1">
-                支持 JPG / PNG 格式，文件大小不超过
-                10MB，长边≤10800px，短边≤1080px。
+                支持 JPG / PNG 格式，文件大小不超过 10MB。
               </div>
             </div>
           </el-form-item>
@@ -688,8 +686,7 @@ onMounted(() => {
                 </div>
               </el-upload>
               <div class="text-xs text-gray-400 mt-1">
-                支持 JPG / PNG 格式，文件大小不超过
-                10MB，长边≤10800px，短边≤1080px。
+                支持 JPG / PNG 格式，文件大小不超过 10MB。
               </div>
             </div>
           </el-form-item>
@@ -720,7 +717,7 @@ onMounted(() => {
                 </div>
               </el-upload>
               <div class="text-xs text-gray-400 mt-1">
-                支持 MP4 格式，文件大小不超过 10MB，时长不超过 30 秒。
+                支持 MP4 格式，文件大小不超过 10MB。
               </div>
             </div>
           </el-form-item>

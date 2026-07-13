@@ -2,9 +2,7 @@ package com.ewcp.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ewcp.entity.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -60,13 +58,13 @@ public interface SystemService {
 
     // ========== 图片管理 ==========
 
-    Long uploadImage(MultipartFile file) throws IOException;
+    Long uploadImage(byte[] data, String filename, String contentType);
 
     Image getImage(Long id);
 
     // ========== 视频管理 ==========
 
-    Long uploadVideo(MultipartFile file) throws IOException;
+    Long uploadVideo(byte[] data, String filename, String contentType);
 
     Video getVideo(Long id);
 

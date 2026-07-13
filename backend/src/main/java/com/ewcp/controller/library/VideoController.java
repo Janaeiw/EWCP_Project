@@ -22,12 +22,13 @@ public class VideoController {
 
     @PostMapping("/upload")
     public R<Map<String, Object>> upload(@RequestParam("file") MultipartFile file) throws IOException {
-        MediaValidator.validateVideo(file.getBytes(), file.getOriginalFilename());
-        Long id = systemService.uploadVideo(file);
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", id);
-        data.put("url", "/api/video/" + id);
-        return R.ok(data);
+        byte[] data = file.getBytes();
+        MediaValidator.validateVideo(data, file.getOriginalFilename());
+        Long id = systemService.uploadVideo(data, file.getOriginalFilename(), file.getContentType());
+        Map<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("url", "/api/video/" + id);
+        return R.ok(result);
     }
 
     @GetMapping("/{id}")

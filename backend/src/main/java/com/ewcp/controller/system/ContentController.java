@@ -2,6 +2,7 @@ package com.ewcp.controller.system;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ewcp.common.result.R;
+import com.ewcp.common.utils.MediaValidator;
 import com.ewcp.common.utils.WxMediaUtils;
 import com.ewcp.entity.Content;
 import com.ewcp.mapper.ImageMapper;
@@ -92,6 +93,12 @@ public class ContentController {
             return R.fail("文本内容与素材不能同时为空");
         }
 
+        // tweet/article 必须有链接
+        if (("tweet".equals(type) || "article".equals(type))
+                && (content.getLink() == null || content.getLink().isBlank())) {
+            return R.fail("链接不能为空");
+        }
+
         // 上传附件
         String mediaId = null;
         if (mediaSource != null && !mediaSource.isBlank()) {
@@ -99,6 +106,18 @@ public class ContentController {
             if (bytes == null) {
                 return R.fail("无法获取素材");
             }
+
+            // 朋友圈特有限制校验
+            try {
+                if ("video".equals(type)) {
+                    MediaValidator.validateMomentVideo(bytes);
+                } else {
+                    MediaValidator.validateMomentImage(bytes);
+                }
+            } catch (IllegalArgumentException e) {
+                return R.fail(e.getMessage());
+            }
+
             boolean isVideo = "video".equals(type);
             String mediaType = isVideo ? "video" : "image";
             String ext = isVideo ? ".mp4" : guessImageExtension(mediaSource);
@@ -130,10 +149,7 @@ public class ContentController {
                 attachment.setMsgType("video");
                 attachment.setVideo(video);
             } else {
-                // tweet / article → link 类型，必须有链接
-                if (content.getLink() == null || content.getLink().isBlank()) {
-                    return R.fail("链接不能为空");
-                }
+                // tweet / article → link 类型
                 Link link = new Link();
                 link.setTitle(content.getTitle());
                 link.setMediaId(mediaId);

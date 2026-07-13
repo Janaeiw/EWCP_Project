@@ -12,8 +12,10 @@ public class MediaValidator {
 
     private static final int MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
+    // ========== 上传通用校验 ==========
+
     /**
-     * 校验图片：≤10MB，JPG/PNG，长边≤10800px 短边≤1080px
+     * 上传图片校验：≤10MB，JPG/PNG
      */
     public static void validateImage(byte[] data, String filename) {
         if (data.length > MAX_SIZE) {
@@ -23,6 +25,30 @@ public class MediaValidator {
         if (!lower.endsWith(".jpg") && !lower.endsWith(".jpeg") && !lower.endsWith(".png")) {
             throw new IllegalArgumentException("仅支持JPG、PNG格式的图片");
         }
+    }
+
+    /**
+     * 上传视频校验：≤10MB，MP4
+     */
+    public static void validateVideo(byte[] data, String filename) {
+        if (data.length > MAX_SIZE) {
+            throw new IllegalArgumentException("视频大小超过10MB限制");
+        }
+        String lower = filename != null ? filename.toLowerCase() : "";
+        if (!lower.endsWith(".mp4")) {
+            throw new IllegalArgumentException("仅支持MP4格式的视频");
+        }
+        if (data.length < 8 || !"ftyp".equals(new String(data, 4, 4))) {
+            throw new IllegalArgumentException("视频文件格式不正确，请上传MP4格式");
+        }
+    }
+
+    // ========== 朋友圈特有限制 ==========
+
+    /**
+     * 朋友圈图片校验：长边≤10800px，短边≤1080px
+     */
+    public static void validateMomentImage(byte[] data) {
         try {
             BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
             if (img == null) {
@@ -46,19 +72,9 @@ public class MediaValidator {
     }
 
     /**
-     * 校验视频：≤10MB，MP4，时长≤30s
+     * 朋友圈视频校验：时长≤30s
      */
-    public static void validateVideo(byte[] data, String filename) {
-        if (data.length > MAX_SIZE) {
-            throw new IllegalArgumentException("视频大小超过10MB限制");
-        }
-        String lower = filename != null ? filename.toLowerCase() : "";
-        if (!lower.endsWith(".mp4")) {
-            throw new IllegalArgumentException("仅支持MP4格式的视频");
-        }
-        if (data.length < 8 || !"ftyp".equals(new String(data, 4, 4))) {
-            throw new IllegalArgumentException("视频文件格式不正确，请上传MP4格式");
-        }
+    public static void validateMomentVideo(byte[] data) {
         try {
             double duration = getMp4Duration(data);
             if (duration > 30) {
@@ -67,7 +83,7 @@ public class MediaValidator {
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (Exception e) {
-            // 时长解析失败不阻断上传，由企微服务端兜底校验
+            // 时长解析失败不阻断，由企微服务端兜底校验
         }
     }
 

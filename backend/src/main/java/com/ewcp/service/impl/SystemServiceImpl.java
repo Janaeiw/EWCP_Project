@@ -11,9 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -291,11 +289,11 @@ public class SystemServiceImpl implements SystemService {
     // ========== 图片管理 ==========
 
     @Override
-    public Long uploadImage(MultipartFile file) throws IOException {
+    public Long uploadImage(byte[] data, String filename, String contentType) {
         Image image = new Image();
-        image.setName(file.getOriginalFilename());
-        image.setType(file.getContentType());
-        image.setData(file.getBytes());
+        image.setName(filename);
+        image.setType(contentType);
+        image.setData(data);
         imageMapper.insert(image);
         return image.getId();
     }
@@ -308,11 +306,11 @@ public class SystemServiceImpl implements SystemService {
     // ========== 视频管理 ==========
 
     @Override
-    public Long uploadVideo(MultipartFile file) throws IOException {
+    public Long uploadVideo(byte[] data, String filename, String contentType) {
         Video video = new Video();
-        video.setName(file.getOriginalFilename());
-        video.setType(file.getContentType());
-        video.setData(file.getBytes());
+        video.setName(filename);
+        video.setType(contentType);
+        video.setData(data);
         videoMapper.insert(video);
         return video.getId();
     }
