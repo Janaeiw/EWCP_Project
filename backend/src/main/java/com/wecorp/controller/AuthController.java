@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -108,9 +109,50 @@ public class AuthController {
     }
 
     @GetMapping("/routes")
-    public R<List<Map<String, Object>>> getRoutes() {
-        List<Map<String, Object>> routeTree = systemService.getRouteTree();
+    public R<List<Map<String, Object>>> getRoutes(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        List<String> userRoles = getCurrentUserRoles(authHeader);
+
+        List<Map<String, Object>> routeTree;
+        if (userRoles.contains("admin")) {
+            routeTree = systemService.getRouteTree();
+        } else {
+            Set<Long> roleIds = userRoles.stream()
+                    .flatMap(roleKey -> {
+                        Role role = roleMapper.selectOne(
+                                new LambdaQueryWrapper<Role>().eq(Role::getRoleKey, roleKey));
+                        return role != null ? Stream.of(role.getId()) : Stream.empty();
+                    })
+                    .collect(Collectors.toSet());
+            if (roleIds.isEmpty()) {
+                return R.ok(List.of());
+            }
+            List<RoleMenu> roleMenus = roleMenuMapper.selectList(
+                    new LambdaQueryWrapper<RoleMenu>().in(RoleMenu::getRoleId, roleIds));
+            Set<Long> menuIds = roleMenus.stream()
+                    .map(RoleMenu::getMenuId).collect(Collectors.toSet());
+            if (menuIds.isEmpty()) {
+                return R.ok(List.of());
+            }
+            routeTree = systemService.getRouteTreeByMenuIds(menuIds);
+        }
         return R.ok(routeTree);
+    }
+
+    private List<String> getCurrentUserRoles(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) return List.of();
+        String token = authHeader.substring(7);
+        try {
+            Long userId = jwtUtils.getUserId(token);
+            List<UserRole> userRoles = userRoleMapper.selectList(
+                    new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId));
+            if (userRoles.isEmpty()) return List.of();
+            Set<Long> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toSet());
+            return roleMapper.selectBatchIds(roleIds).stream()
+                    .map(Role::getRoleKey).collect(Collectors.toList());
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
     @Data

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -299,6 +300,57 @@ public class SystemServiceImpl implements SystemService {
                 .collect(Collectors.groupingBy(Menu::getParentId));
 
         return buildRouteTree(all, 0L, menuRoleIdMap, roleIdKeyMap, buttonsByParent);
+    }
+
+    @Override
+    public List<Map<String, Object>> getRouteTreeByMenuIds(Set<Long> menuIds) {
+        // 查所有非按钮类型且状态启用的菜单
+        List<Menu> all = menuMapper.selectList(
+                new LambdaQueryWrapper<Menu>()
+                        .eq(Menu::getStatus, 1)
+                        .ne(Menu::getMenuType, 1)
+                        .orderByAsc(Menu::getRank)
+        );
+
+        // 收集 menuIds 中所有菜单的祖先 ID（保证树结构完整）
+        Set<Long> allowedIds = new HashSet<>(menuIds);
+        for (Menu m : all) {
+            if (allowedIds.contains(m.getId())) {
+                Long curPid = m.getParentId();
+                while (curPid != null && curPid != 0) {
+                    allowedIds.add(curPid);
+                    Long finalCurPid = curPid;
+                    Menu parent = all.stream()
+                            .filter(p -> p.getId().equals(finalCurPid))
+                            .findFirst().orElse(null);
+                    curPid = parent != null ? parent.getParentId() : null;
+                }
+            }
+        }
+
+        // 只保留 allowedIds 中的菜单
+        List<Menu> filtered = all.stream()
+                .filter(m -> allowedIds.contains(m.getId()))
+                .collect(Collectors.toList());
+
+        // 预查关联数据（与 getRouteTree 一致）
+        List<RoleMenu> allRoleMenus = roleMenuMapper.selectList(new LambdaQueryWrapper<>());
+        Map<Long, Set<Long>> menuRoleIdMap = allRoleMenus.stream()
+                .collect(Collectors.groupingBy(RoleMenu::getMenuId,
+                        Collectors.mapping(RoleMenu::getRoleId, Collectors.toSet())));
+        List<Role> allRoles = roleMapper.selectList(
+                new LambdaQueryWrapper<Role>().eq(Role::getStatus, 1));
+        Map<Long, String> roleIdKeyMap = allRoles.stream()
+                .collect(Collectors.toMap(Role::getId, Role::getRoleKey));
+        List<Menu> buttonMenus = menuMapper.selectList(
+                new LambdaQueryWrapper<Menu>()
+                        .eq(Menu::getMenuType, 1)
+                        .eq(Menu::getStatus, 1)
+                        .isNotNull(Menu::getPermission));
+        Map<Long, List<Menu>> buttonsByParent = buttonMenus.stream()
+                .collect(Collectors.groupingBy(Menu::getParentId));
+
+        return buildRouteTree(filtered, 0L, menuRoleIdMap, roleIdKeyMap, buttonsByParent);
     }
 
     @Override

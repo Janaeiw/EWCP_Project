@@ -5,6 +5,7 @@ import com.wecorp.entity.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface SystemService {
 
@@ -53,6 +54,8 @@ public interface SystemService {
     List<Menu> getMenuTree(String keyword);
 
     List<Map<String, Object>> getRouteTree();
+
+    List<Map<String, Object>> getRouteTreeByMenuIds(Set<Long> menuIds);
 
     Menu getMenuById(Long id);
 
