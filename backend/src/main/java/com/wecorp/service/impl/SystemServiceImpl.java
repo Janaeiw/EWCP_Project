@@ -360,6 +360,11 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public void createMenu(Menu menu) {
+        // 按钮类型自动生成 path（与 seedButtonMenu 逻辑一致）
+        if (menu.getMenuType() != null && menu.getMenuType() == 1
+                && !StringUtils.hasText(menu.getPath())) {
+            menu.setPath(menu.getParentId() + ":" + menu.getPermission());
+        }
         menuMapper.insert(menu);
     }
 
