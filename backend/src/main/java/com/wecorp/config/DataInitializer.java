@@ -185,6 +185,7 @@ public class DataInitializer implements ApplicationRunner {
         if (existing != null) return;
         Menu menu = new Menu();
         menu.setParentId(parentId);
+        menu.setPath(parentId + ":" + permission);
         menu.setMenuType(1);
         menu.setPermission(permission);
         menu.setTitle(title);
