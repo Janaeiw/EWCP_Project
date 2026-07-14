@@ -324,6 +324,9 @@ function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
       v.name = (v.children[0].name as string) + "Parent";
     if (v.meta?.frameSrc) {
       v.component = IFrame;
+    } else if (v?.children && v.children.length && !v.component) {
+      // 有子路由但没有 component 的父路由（如 /system），不设组件，
+      // 让 Vue Router 当作 pass-through 路由，避免错误匹配到同路径前缀的模块
     } else {
       // 对后端传component组件路径和不传做兼容（如果后端传component组件路径，那么path可以随便写，如果不传，component组件路径会跟path保持一致）
       const index = v?.component
