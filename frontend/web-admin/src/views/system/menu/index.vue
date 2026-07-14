@@ -23,6 +23,15 @@ const handleSearchInput = () => {
   }, 300);
 };
 
+const handleSearch = () => {
+  fetchData();
+};
+
+const handleReset = () => {
+  searchForm.title = "";
+  fetchData();
+};
+
 // ===== 表格数据 =====
 const loading = ref(false);
 const tableData = ref<MenuItem[]>([]);
@@ -201,6 +210,10 @@ onMounted(fetchData);
             @input="handleSearchInput"
             @clear="fetchData"
           />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
