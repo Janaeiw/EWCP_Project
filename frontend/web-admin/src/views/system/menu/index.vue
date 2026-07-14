@@ -70,15 +70,17 @@ const form = reactive<Partial<MenuItem>>({
   rank: 0,
   menuType: 0,
   permission: "",
-  showLink: 1,
+  showLink: 0,
   status: 1,
   remark: ""
 });
 
 const rules: FormRules = {
-  title: [{ required: true, message: "请输入菜单标题", trigger: "blur" }],
+  title: [{ required: true, message: "请输入菜单名称", trigger: "blur" }],
+  name: [{ required: true, message: "请输入路由路径", trigger: "blur" }],
   path: [
     {
+      required: true,
       validator: (_rule, _value, callback) => {
         if (form.menuType !== 1 && !form.path) {
           callback(new Error("请输入路由路径"));
@@ -91,9 +93,10 @@ const rules: FormRules = {
   ],
   permission: [
     {
+      required: true,
       validator: (_rule, _value, callback) => {
         if (form.menuType === 1 && !form.permission) {
-          callback(new Error("按钮类型必须填写权限标识"));
+          callback(new Error("请输入权限标识"));
         } else {
           callback();
         }
@@ -134,7 +137,7 @@ const handleAdd = (parentId = 0) => {
     rank: 0,
     menuType: 0,
     permission: "",
-    showLink: 1,
+    showLink: 0,
     status: 1,
     remark: ""
   });
@@ -161,7 +164,8 @@ const handleEdit = (row: MenuItem) => {
   dialogVisible.value = true;
 };
 
-const handleTabChange = () => {
+const handleTabChange = (val: number) => {
+  form.showLink = val === 0 ? 1 : 0;
   formRef.value?.clearValidate();
 };
 
@@ -235,7 +239,7 @@ onMounted(fetchData);
         border
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
-        <el-table-column prop="title" label="菜单标题" min-width="180" />
+        <el-table-column prop="title" label="菜单名称" min-width="180" />
         <el-table-column
           prop="menuType"
           label="菜单类型"
@@ -244,7 +248,7 @@ onMounted(fetchData);
         >
           <template #default="{ row }">
             <el-tag
-              :type="row.menuType === 1 ? 'warning' : 'info'"
+              :type="row.menuType === 1 ? 'info' : 'success'"
               size="small"
             >
               {{ row.menuType === 1 ? "按钮" : "菜单" }}
@@ -342,8 +346,8 @@ onMounted(fetchData);
             placeholder="如 system:user:add"
           />
         </el-form-item>
-        <el-form-item label="菜单标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入菜单标题" />
+        <el-form-item label="菜单名称" prop="title">
+          <el-input v-model="form.title" placeholder="请输入菜单名称" />
         </el-form-item>
         <el-form-item v-if="form.menuType !== 1" label="路由路径" prop="path">
           <el-input
