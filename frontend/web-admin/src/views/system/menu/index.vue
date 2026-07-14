@@ -368,7 +368,11 @@ onMounted(fetchData);
         <el-form-item label="排序" prop="rank">
           <el-input-number v-model="form.rank" :min="0" :max="9999" />
         </el-form-item>
-        <el-form-item v-if="form.menuType !== 1" label="是否显示" prop="showLink">
+        <el-form-item
+          v-if="form.menuType !== 1"
+          label="是否显示"
+          prop="showLink"
+        >
           <el-radio-group v-model="form.showLink">
             <el-radio :value="1">显示</el-radio>
             <el-radio :value="0">隐藏</el-radio>
