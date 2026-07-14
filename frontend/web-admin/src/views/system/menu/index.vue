@@ -206,7 +206,6 @@ onMounted(fetchData);
         :data="filteredTableData"
         row-key="id"
         border
-        default-expand-all
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
         <el-table-column prop="title" label="菜单标题" min-width="180" />

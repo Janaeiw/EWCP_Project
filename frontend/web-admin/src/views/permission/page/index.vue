@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { initRouter } from "@/router/utils";
+import { resetRouter } from "@/router";
 import { storageLocal } from "@pureadmin/utils";
 import { type CSSProperties, ref, computed } from "vue";
 import { useUserStoreHook } from "@/store/modules/user";
-import { usePermissionStoreHook } from "@/store/modules/permission";
 
 defineOptions({
   name: "PermissionPage"
@@ -35,7 +35,7 @@ function onChange() {
     .then(res => {
       if (res.success) {
         storageLocal().removeItem("async-routes");
-        usePermissionStoreHook().clearAllCachePage();
+        resetRouter();
         initRouter();
       }
     });
