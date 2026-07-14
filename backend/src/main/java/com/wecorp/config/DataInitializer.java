@@ -99,23 +99,18 @@ public class DataInitializer implements ApplicationRunner {
         seedChildMenu(systemMenu.getId(), "/system/config", "system/config/index", "SystemConfig", "系统参数管理", 8);
         seedChildMenu(systemMenu.getId(), "/system/job", "system/job/index", "SystemJob", "定时任务管理", 9);
 
-        // 给系统管理菜单补按钮类型子菜单
-        seedButtonMenu(systemMenu.getId(), "permission:btn:add", "添加", 1);
-        seedButtonMenu(systemMenu.getId(), "permission:btn:edit", "编辑", 2);
-        seedButtonMenu(systemMenu.getId(), "permission:btn:delete", "删除", 3);
-
         // ===== 权限管理菜单 =====
         Menu permMenu = seedParentMenu("/permission", "权限管理", "ep:lollipop", 10);
         Long permId = permMenu.getId();
 
         seedChildMenu(permId, "/permission/page/index", "permission/page/index", "PermissionPage", "页面权限", 1);
         Menu btnMenu = seedChildMenu(permId, "/permission/button", null, null, "按钮权限", 2);
-        seedChildMenu(btnMenu.getId(), "/permission/button/router", "permission/button/index", "PermissionButtonRouter", "路由返回按钮权限", 1);
+        Menu btnRouterMenu = seedChildMenu(btnMenu.getId(), "/permission/button/router", "permission/button/index", "PermissionButtonRouter", "路由返回按钮权限", 1);
         seedChildMenu(btnMenu.getId(), "/permission/button/login", "permission/button/perms", "PermissionButtonLogin", "登录接口返回按钮权限", 2);
 
-        seedButtonMenu(permId, "permission:btn:add", "添加", 1);
-        seedButtonMenu(permId, "permission:btn:edit", "编辑", 2);
-        seedButtonMenu(permId, "permission:btn:delete", "删除", 3);
+        seedButtonMenu(btnRouterMenu.getId(), "permission:btn:add", "添加", 1);
+        seedButtonMenu(btnRouterMenu.getId(), "permission:btn:edit", "编辑", 2);
+        seedButtonMenu(btnRouterMenu.getId(), "permission:btn:delete", "删除", 3);
 
         // ===== 六库管理菜单 =====
         Menu libMenu = seedParentMenu("/library", "六库管理", "ep:collection", 12);
@@ -127,10 +122,6 @@ public class DataInitializer implements ApplicationRunner {
         seedChildMenu(libId, "/library/script", "library/script/index", "LibraryScript", "话术库", 4);
         seedChildMenu(libId, "/library/activity", "library/activity/index", "LibraryActivity", "活动库", 5);
         seedChildMenu(libId, "/library/tool", "library/tool/index", "LibraryTool", "工具库", 6);
-
-        seedButtonMenu(libId, "permission:btn:add", "添加", 1);
-        seedButtonMenu(libId, "permission:btn:edit", "编辑", 2);
-        seedButtonMenu(libId, "permission:btn:delete", "删除", 3);
 
         // ===== admin 角色绑定 systemRouter 所有菜单 =====
         Role adminRole = roleMapper.selectOne(
