@@ -308,11 +308,13 @@ onMounted(fetchData);
       width="600px"
       destroy-on-close
     >
-      <el-radio-group v-model="form.menuType" class="mb-4" @change="handleTabChange">
-        <el-radio-button :value="0">菜单</el-radio-button>
-        <el-radio-button :value="1">按钮</el-radio-button>
-      </el-radio-group>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="菜单类型" prop="menuType">
+          <el-radio-group v-model="form.menuType" @change="handleTabChange">
+            <el-radio-button :value="0">菜单</el-radio-button>
+            <el-radio-button :value="1">按钮</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="父级菜单">
           <el-select
             v-model="form.parentId"
