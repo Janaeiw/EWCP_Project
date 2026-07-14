@@ -55,7 +55,7 @@ const form = reactive<Partial<MenuItem>>({
   rank: 0,
   menuType: 0,
   permission: "",
-  showLink: 0,
+  showLink: 1,
   status: 1,
   remark: ""
 });
@@ -122,7 +122,7 @@ const handleAdd = (parentId = 0) => {
     rank: 0,
     menuType: 0,
     permission: "",
-    showLink: 0,
+    showLink: 1,
     status: 1,
     remark: ""
   });
@@ -149,8 +149,7 @@ const handleEdit = (row: MenuItem) => {
   dialogVisible.value = true;
 };
 
-const handleTabChange = (val: number) => {
-  form.showLink = val === 0 ? 1 : 0;
+const handleTabChange = () => {
   formRef.value?.clearValidate();
 };
 
@@ -245,7 +244,12 @@ onMounted(fetchData);
             <span class="text-gray-400">{{ row.icon || "-" }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="path" label="路由路径" min-width="180" />
+        <el-table-column prop="path" label="路由路径" min-width="180">
+          <template #default="{ row }">
+            <span v-if="row.menuType !== 1">{{ row.path }}</span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="component"
           label="组件路径"
@@ -368,11 +372,7 @@ onMounted(fetchData);
         <el-form-item label="排序" prop="rank">
           <el-input-number v-model="form.rank" :min="0" :max="9999" />
         </el-form-item>
-        <el-form-item
-          v-if="form.menuType !== 1"
-          label="是否显示"
-          prop="showLink"
-        >
+        <el-form-item label="是否显示" prop="showLink">
           <el-radio-group v-model="form.showLink">
             <el-radio :value="1">显示</el-radio>
             <el-radio :value="0">隐藏</el-radio>

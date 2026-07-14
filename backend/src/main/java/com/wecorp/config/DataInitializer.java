@@ -181,7 +181,7 @@ public class DataInitializer implements ApplicationRunner {
         menu.setPermission(permission);
         menu.setTitle(title);
         menu.setRank(rank);
-        menu.setShowLink(0);
+        menu.setShowLink(1);
         menu.setStatus(1);
         menuMapper.insert(menu);
         log.info("按钮权限已创建: {} -> {} (id={})", parentId, permission, menu.getId());
