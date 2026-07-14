@@ -1,0 +1,7 @@
+{"file": "prd.md", "reason": "完整需求定义：R1-R8 覆盖数据库、后端、前端所有改动"}
+{"file": ".trellis/spec/backend/database-guidelines.md", "reason": "Flyway 迁移规范和数据库设计约定"}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "后端目录结构和分层约定"}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "后端错误处理规范"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "前端目录结构约定"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "前端组件编写规范"}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "TypeScript 类型安全约定"}
