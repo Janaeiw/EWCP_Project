@@ -239,15 +239,11 @@ onMounted(fetchData);
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="icon" label="图标" width="100" align="center">
-          <template #default="{ row }">
-            <span class="text-gray-400">{{ row.icon || "-" }}</span>
-          </template>
-        </el-table-column>
+        <el-table-column prop="icon" label="图标" width="100" align="center" />
         <el-table-column prop="path" label="路由路径" min-width="180">
           <template #default="{ row }">
             <span v-if="row.menuType !== 1">{{ row.path }}</span>
-            <span v-else class="text-gray-400">-</span>
+            <span v-else />
           </template>
         </el-table-column>
         <el-table-column
@@ -372,7 +368,7 @@ onMounted(fetchData);
         <el-form-item label="排序" prop="rank">
           <el-input-number v-model="form.rank" :min="0" :max="9999" />
         </el-form-item>
-        <el-form-item label="是否显示" prop="showLink">
+        <el-form-item v-if="form.menuType !== 1" label="是否显示" prop="showLink">
           <el-radio-group v-model="form.showLink">
             <el-radio :value="1">显示</el-radio>
             <el-radio :value="0">隐藏</el-radio>
