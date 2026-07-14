@@ -215,6 +215,7 @@ onMounted(fetchData);
             class="w-[180px]!"
             placeholder="请输入菜单名称"
             clearable
+            @clear="handleSearch"
           />
         </el-form-item>
         <el-form-item>
@@ -292,7 +293,12 @@ onMounted(fetchData);
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right" align="center">
           <template #default="{ row }">
-            <el-button v-if="row.menuType !== 1" link type="primary" @click="handleAdd(row.id)">
+            <el-button
+              v-if="row.menuType !== 1"
+              link
+              type="primary"
+              @click="handleAdd(row.id)"
+            >
               新增子菜单
             </el-button>
             <el-button link type="primary" @click="handleEdit(row)">
@@ -315,7 +321,11 @@ onMounted(fetchData);
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="菜单类型" prop="menuType">
-          <el-radio-group v-model="form.menuType" :disabled="!!form.id" @change="handleTabChange">
+          <el-radio-group
+            v-model="form.menuType"
+            :disabled="!!form.id"
+            @change="handleTabChange"
+          >
             <el-radio-button :value="0">菜单</el-radio-button>
             <el-radio-button :value="1">按钮</el-radio-button>
           </el-radio-group>
