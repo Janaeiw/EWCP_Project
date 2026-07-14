@@ -10,8 +10,8 @@ export interface MenuItem {
   title: string;
   icon: string;
   rank: number;
-  roles: string;
-  auths: string;
+  menuType: number;
+  permission: string;
   showLink: number;
   status: number;
   remark?: string;

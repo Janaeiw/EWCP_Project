@@ -6,11 +6,15 @@ import jakarta.validation.constraints.NotBlank;
 import com.wecorp.common.exception.BusinessException;
 import com.wecorp.common.result.R;
 import com.wecorp.common.utils.JwtUtils;
+import com.wecorp.entity.Menu;
 import com.wecorp.entity.Role;
 import com.wecorp.entity.User;
 import com.wecorp.entity.UserRole;
+import com.wecorp.mapper.MenuMapper;
 import com.wecorp.mapper.RoleMapper;
+import com.wecorp.mapper.RoleMenuMapper;
 import com.wecorp.mapper.UserRoleMapper;
+import com.wecorp.entity.RoleMenu;
 import com.wecorp.service.SystemService;
 import com.wecorp.service.UserService;
 import lombok.Data;
@@ -33,6 +37,8 @@ public class AuthController {
     private final JwtUtils jwtUtils;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
+    private final RoleMenuMapper roleMenuMapper;
+    private final MenuMapper menuMapper;
 
     @Value("${jwt.expiration}")
     private long jwtExpiration;
@@ -57,10 +63,37 @@ public class AuthController {
                     .map(Role::getRoleKey)
                     .collect(Collectors.toList());
         }
-        // TODO: permissions 后续从 t_role_permission 关联表查询
-        List<String> permissions = roles.contains("admin")
-                ? List.of("*:*:*")
-                : List.of();
+        // 从 t_role_menu + t_menu 查询真实权限
+        List<String> permissions;
+        if (roles.contains("admin")) {
+            permissions = List.of("*:*:*");
+        } else {
+            Set<Long> allRoleIds = userRoles.stream()
+                    .map(UserRole::getRoleId).collect(Collectors.toSet());
+            if (allRoleIds.isEmpty()) {
+                permissions = List.of();
+            } else {
+                // 查这些角色关联的菜单ID
+                List<RoleMenu> roleMenus = roleMenuMapper.selectList(
+                        new LambdaQueryWrapper<RoleMenu>().in(RoleMenu::getRoleId, allRoleIds));
+                Set<Long> menuIds = roleMenus.stream()
+                        .map(RoleMenu::getMenuId).collect(Collectors.toSet());
+                if (menuIds.isEmpty()) {
+                    permissions = List.of();
+                } else {
+                    // 查其中按钮类型且有 permission 标识的菜单
+                    List<Menu> buttonMenus = menuMapper.selectList(
+                            new LambdaQueryWrapper<Menu>()
+                                    .in(Menu::getId, menuIds)
+                                    .eq(Menu::getMenuType, 1)
+                                    .isNotNull(Menu::getPermission));
+                    permissions = buttonMenus.stream()
+                            .map(Menu::getPermission)
+                            .distinct()
+                            .collect(Collectors.toList());
+                }
+            }
+        }
 
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("accessToken", token);

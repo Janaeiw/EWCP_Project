@@ -48,4 +48,15 @@ public class RoleController {
         systemService.deleteRole(id);
         return R.ok();
     }
+
+    @GetMapping("/{id}/menus")
+    public R<List<Long>> getRoleMenus(@PathVariable Long id) {
+        return R.ok(systemService.getRoleMenuIds(id));
+    }
+
+    @PutMapping("/{id}/menus")
+    public R<Void> saveRoleMenus(@PathVariable Long id, @RequestBody List<Long> menuIds) {
+        systemService.saveRoleMenus(id, menuIds);
+        return R.ok();
+    }
 }

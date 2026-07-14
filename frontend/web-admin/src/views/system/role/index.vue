@@ -7,8 +7,12 @@ import {
   createRole,
   updateRole,
   deleteRole,
+  getRoleMenuIds,
+  saveRoleMenus,
   type RoleItem
 } from "@/api/system/role";
+import { getMenuTree, type MenuItem } from "@/api/system/menu";
+import type { ElTree } from "element-plus";
 
 defineOptions({ name: "SystemRole" });
 
@@ -136,6 +140,64 @@ const handleDelete = (row: RoleItem) => {
   });
 };
 
+// ===== 权限分配弹窗 =====
+const permDialogVisible = ref(false);
+const permDialogTitle = ref("分配权限");
+const permTreeData = ref<MenuItem[]>([]);
+const permCheckedKeys = ref<number[]>([]);
+const permLoading = ref(false);
+const permSaving = ref(false);
+const currentRoleId = ref<number | null>(null);
+const permTreeRef = ref<InstanceType<typeof ElTree> | null>(null);
+
+const permTreeProps = {
+  label: "title",
+  children: "children"
+};
+
+const handlePerm = async (row: RoleItem) => {
+  currentRoleId.value = row.id;
+  permDialogTitle.value = `分配权限 - ${row.roleName}`;
+  permDialogVisible.value = true;
+  permLoading.value = true;
+  try {
+    const [treeRes, idsRes] = await Promise.all([
+      getMenuTree(),
+      getRoleMenuIds(row.id)
+    ]);
+    if (treeRes.code === 0) {
+      permTreeData.value = treeRes.data;
+    }
+    if (idsRes.code === 0) {
+      permCheckedKeys.value = idsRes.data ?? [];
+    }
+  } finally {
+    permLoading.value = false;
+  }
+};
+
+const handlePermSave = async () => {
+  if (currentRoleId.value === null) return;
+  const tree = permTreeRef.value;
+  if (!tree) return;
+  // 合并已勾选和半选中的节点（半选 = 父节点部分子节点被勾选）
+  const checkedKeys = tree.getCheckedKeys() as number[];
+  const halfCheckedKeys = tree.getHalfCheckedKeys() as number[];
+  const allKeys = [...new Set([...checkedKeys, ...halfCheckedKeys])];
+  permSaving.value = true;
+  try {
+    const res = await saveRoleMenus(currentRoleId.value, allKeys);
+    if (res.code === 0) {
+      ElMessage.success("权限保存成功");
+      permDialogVisible.value = false;
+    } else {
+      ElMessage.error(res.msg);
+    }
+  } finally {
+    permSaving.value = false;
+  }
+};
+
 onMounted(fetchData);
 </script>
 
@@ -200,8 +262,11 @@ onMounted(fetchData);
           min-width="160"
           align="center"
         />
-        <el-table-column label="操作" width="150" fixed="right" align="center">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
+            <el-button link type="primary" @click="handlePerm(row)">
+              权限
+            </el-button>
             <el-button link type="primary" @click="handleEdit(row)">
               编辑
             </el-button>
@@ -258,6 +323,37 @@ onMounted(fetchData);
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSubmit">确定</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- 权限分配弹窗 -->
+    <el-dialog
+      v-model="permDialogVisible"
+      :title="permDialogTitle"
+      width="600px"
+      destroy-on-close
+    >
+      <div v-loading="permLoading" class="min-h-[300px]">
+        <el-tree
+          v-if="permTreeData.length"
+          ref="permTreeRef"
+          :data="permTreeData"
+          :props="permTreeProps"
+          :default-checked-keys="permCheckedKeys"
+          node-key="id"
+          show-checkbox
+          default-expand-all
+        />
+        <el-empty
+          v-if="!permLoading && !permTreeData.length"
+          description="暂无菜单数据"
+        />
+      </div>
+      <template #footer>
+        <el-button @click="permDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="permSaving" @click="handlePermSave">
+          确定
+        </el-button>
       </template>
     </el-dialog>
   </div>

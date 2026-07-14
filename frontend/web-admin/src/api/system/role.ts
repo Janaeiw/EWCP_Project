@@ -44,3 +44,22 @@ export const updateRole = (data: Partial<RoleItem>) => {
 export const deleteRole = (id: number) => {
   return http.request<ApiResult<void>>("delete", `/api/system/role/${id}`);
 };
+
+/** 查询角色已关联的菜单ID列表 */
+export const getRoleMenuIds = (roleId: number) => {
+  return http.request<ApiResult<number[]>>(
+    "get",
+    `/api/system/role/${roleId}/menus`
+  );
+};
+
+/** 保存角色-菜单关联 */
+export const saveRoleMenus = (roleId: number, menuIds: number[]) => {
+  return http.request<ApiResult<void>>(
+    "put",
+    `/api/system/role/${roleId}/menus`,
+    {
+      data: menuIds
+    }
+  );
+};

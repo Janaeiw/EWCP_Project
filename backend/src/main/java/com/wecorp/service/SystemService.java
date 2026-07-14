@@ -34,6 +34,10 @@ public interface SystemService {
 
     void deleteRole(Long id);
 
+    List<Long> getRoleMenuIds(Long roleId);
+
+    void saveRoleMenus(Long roleId, List<Long> menuIds);
+
     // ========== 权限管理 ==========
 
     List<Permission> getPermissionTree();

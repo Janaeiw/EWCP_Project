@@ -90,25 +90,24 @@ public class DataInitializer implements ApplicationRunner {
             systemMenu.setTitle("系统管理");
             systemMenu.setIcon("ep:setting");
             systemMenu.setRank(99);
-            systemMenu.setRoles("[\"admin\"]");
             systemMenu.setShowLink(1);
             systemMenu.setStatus(1);
             menuMapper.insert(systemMenu);
             log.info("默认系统管理菜单已创建: id={}", systemMenu.getId());
         }
 
-        seedChildMenu(systemMenu.getId(), "/system/user", "system/user/index", "SystemUser", "用户管理", 1, "[\"admin\"]");
-        seedChildMenu(systemMenu.getId(), "/system/role", "system/role/index", "SystemRole", "角色管理", 2, null);
-        seedChildMenu(systemMenu.getId(), "/system/permission", "system/permission/index", "SystemPermission", "权限管理", 3, null);
-        seedChildMenu(systemMenu.getId(), "/system/organization", "system/organization/index", "SystemOrganization", "机构管理", 4, null);
-        seedChildMenu(systemMenu.getId(), "/system/menu", "system/menu/index", "SystemMenu", "菜单管理", 5, null);
-        seedChildMenu(systemMenu.getId(), "/system/log", "system/log/index", "SystemLog", "日志管理", 6, null);
-        seedChildMenu(systemMenu.getId(), "/system/dict", "system/dict/index", "SystemDict", "字典管理", 7, null);
-        seedChildMenu(systemMenu.getId(), "/system/config", "system/config/index", "SystemConfig", "系统参数管理", 8, null);
-        seedChildMenu(systemMenu.getId(), "/system/job", "system/job/index", "SystemJob", "定时任务管理", 9, null);
+        seedChildMenu(systemMenu.getId(), "/system/user", "system/user/index", "SystemUser", "用户管理", 1);
+        seedChildMenu(systemMenu.getId(), "/system/role", "system/role/index", "SystemRole", "角色管理", 2);
+        seedChildMenu(systemMenu.getId(), "/system/permission", "system/permission/index", "SystemPermission", "权限管理", 3);
+        seedChildMenu(systemMenu.getId(), "/system/organization", "system/organization/index", "SystemOrganization", "机构管理", 4);
+        seedChildMenu(systemMenu.getId(), "/system/menu", "system/menu/index", "SystemMenu", "菜单管理", 5);
+        seedChildMenu(systemMenu.getId(), "/system/log", "system/log/index", "SystemLog", "日志管理", 6);
+        seedChildMenu(systemMenu.getId(), "/system/dict", "system/dict/index", "SystemDict", "字典管理", 7);
+        seedChildMenu(systemMenu.getId(), "/system/config", "system/config/index", "SystemConfig", "系统参数管理", 8);
+        seedChildMenu(systemMenu.getId(), "/system/job", "system/job/index", "SystemJob", "定时任务管理", 9);
     }
 
-    private void seedChildMenu(Long parentId, String path, String component, String name, String title, int rank, String roles) {
+    private void seedChildMenu(Long parentId, String path, String component, String name, String title, int rank) {
         Menu existing = menuMapper.selectOne(
                 new LambdaQueryWrapper<Menu>().eq(Menu::getPath, path)
         );
@@ -120,7 +119,6 @@ public class DataInitializer implements ApplicationRunner {
             menu.setName(name);
             menu.setTitle(title);
             menu.setRank(rank);
-            menu.setRoles(roles);
             menu.setShowLink(1);
             menu.setStatus(1);
             menuMapper.insert(menu);

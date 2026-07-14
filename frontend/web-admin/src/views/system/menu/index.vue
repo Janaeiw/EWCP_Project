@@ -68,8 +68,8 @@ const form = reactive<Partial<MenuItem>>({
   title: "",
   icon: "",
   rank: 0,
-  roles: "",
-  auths: "",
+  menuType: 0,
+  permission: "",
   showLink: 1,
   status: 1,
   remark: ""
@@ -77,7 +77,30 @@ const form = reactive<Partial<MenuItem>>({
 
 const rules: FormRules = {
   title: [{ required: true, message: "请输入菜单标题", trigger: "blur" }],
-  path: [{ required: true, message: "请输入路由路径", trigger: "blur" }]
+  path: [
+    {
+      validator: (_rule, _value, callback) => {
+        if (form.menuType !== 1 && !form.path) {
+          callback(new Error("请输入路由路径"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur"
+    }
+  ],
+  permission: [
+    {
+      validator: (_rule, _value, callback) => {
+        if (form.menuType === 1 && !form.permission) {
+          callback(new Error("按钮类型必须填写权限标识"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur"
+    }
+  ]
 };
 
 // 父级菜单选择列表（扁平化，排除自身及子节点）
@@ -109,8 +132,8 @@ const handleAdd = (parentId = 0) => {
     title: "",
     icon: "",
     rank: 0,
-    roles: "",
-    auths: "",
+    menuType: 0,
+    permission: "",
     showLink: 1,
     status: 1,
     remark: ""
@@ -129,8 +152,8 @@ const handleEdit = (row: MenuItem) => {
     title: row.title,
     icon: row.icon || "",
     rank: row.rank,
-    roles: row.roles || "",
-    auths: row.auths || "",
+    menuType: row.menuType ?? 0,
+    permission: row.permission || "",
     showLink: row.showLink,
     status: row.status,
     remark: row.remark || ""
@@ -209,6 +232,21 @@ onMounted(fetchData);
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
         <el-table-column prop="title" label="菜单标题" min-width="180" />
+        <el-table-column
+          prop="menuType"
+          label="菜单类型"
+          width="100"
+          align="center"
+        >
+          <template #default="{ row }">
+            <el-tag
+              :type="row.menuType === 1 ? 'warning' : 'info'"
+              size="small"
+            >
+              {{ row.menuType === 1 ? "按钮" : "菜单/目录" }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="icon" label="图标" width="100" align="center">
           <template #default="{ row }">
             <span class="text-gray-400">{{ row.icon || "-" }}</span>
@@ -284,43 +322,55 @@ onMounted(fetchData);
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="菜单类型" prop="menuType">
+          <el-select v-model="form.menuType" class="w-full">
+            <el-option :value="0" label="目录/菜单" />
+            <el-option :value="1" label="按钮" />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="form.menuType === 1"
+          label="权限标识"
+          prop="permission"
+        >
+          <el-input
+            v-model="form.permission"
+            placeholder="如 system:user:add"
+          />
+        </el-form-item>
         <el-form-item label="菜单标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入菜单标题" />
         </el-form-item>
-        <el-form-item label="路由路径" prop="path">
+        <el-form-item v-if="form.menuType !== 1" label="路由路径" prop="path">
           <el-input
             v-model="form.path"
             placeholder="如 /system/user 或 system/user"
           />
         </el-form-item>
-        <el-form-item label="组件路径" prop="component">
+        <el-form-item
+          v-if="form.menuType !== 1"
+          label="组件路径"
+          prop="component"
+        >
           <el-input
             v-model="form.component"
             placeholder="如 system/user/index"
           />
         </el-form-item>
-        <el-form-item label="路由名称" prop="name">
+        <el-form-item v-if="form.menuType !== 1" label="路由名称" prop="name">
           <el-input v-model="form.name" placeholder="如 SystemUser" />
         </el-form-item>
-        <el-form-item label="图标" prop="icon">
+        <el-form-item v-if="form.menuType !== 1" label="图标" prop="icon">
           <el-input v-model="form.icon" placeholder="如 ep:setting" />
-        </el-form-item>
-        <el-form-item label="可访问角色" prop="roles">
-          <el-input
-            v-model="form.roles"
-            placeholder='JSON数组，如 ["admin","editor"]'
-          />
-        </el-form-item>
-        <el-form-item label="按钮权限" prop="auths">
-          <el-input
-            v-model="form.auths"
-            placeholder='JSON数组，如 ["system:user:add"]'
-          />
         </el-form-item>
         <el-form-item label="排序" prop="rank">
           <el-input-number v-model="form.rank" :min="0" :max="9999" />
         </el-form-item>
-        <el-form-item label="是否显示" prop="showLink">
+        <el-form-item
+          v-if="form.menuType !== 1"
+          label="是否显示"
+          prop="showLink"
+        >
           <el-radio-group v-model="form.showLink">
             <el-radio :value="1">显示</el-radio>
             <el-radio :value="0">隐藏</el-radio>

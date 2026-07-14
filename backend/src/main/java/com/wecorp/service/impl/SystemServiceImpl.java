@@ -26,6 +26,7 @@ public class SystemServiceImpl implements SystemService {
     private final RoleMapper roleMapper;
     private final PermissionMapper permissionMapper;
     private final UserRoleMapper userRoleMapper;
+    private final RoleMenuMapper roleMenuMapper;
     private final MenuMapper menuMapper;
     private final ContentMapper contentMapper;
     private final ImageMapper imageMapper;
@@ -173,6 +174,33 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public void deleteRole(Long id) {
         roleMapper.deleteById(id);
+        // 同时清理角色-菜单关联
+        roleMenuMapper.delete(
+                new LambdaQueryWrapper<RoleMenu>().eq(RoleMenu::getRoleId, id));
+    }
+
+    @Override
+    public List<Long> getRoleMenuIds(Long roleId) {
+        List<RoleMenu> list = roleMenuMapper.selectList(
+                new LambdaQueryWrapper<RoleMenu>().eq(RoleMenu::getRoleId, roleId));
+        return list.stream().map(RoleMenu::getMenuId).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void saveRoleMenus(Long roleId, List<Long> menuIds) {
+        // 先删
+        roleMenuMapper.delete(
+                new LambdaQueryWrapper<RoleMenu>().eq(RoleMenu::getRoleId, roleId));
+        // 后插
+        if (menuIds != null && !menuIds.isEmpty()) {
+            for (Long menuId : menuIds) {
+                RoleMenu rm = new RoleMenu();
+                rm.setRoleId(roleId);
+                rm.setMenuId(menuId);
+                roleMenuMapper.insert(rm);
+            }
+        }
     }
 
     // ========== 权限管理 ==========
@@ -215,13 +243,38 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public List<Map<String, Object>> getRouteTree() {
+        // 只查非按钮类型节点（menuType != 1），status=1, showLink=1
         List<Menu> all = menuMapper.selectList(
                 new LambdaQueryWrapper<Menu>()
                         .eq(Menu::getStatus, 1)
                         .eq(Menu::getShowLink, 1)
+                        .ne(Menu::getMenuType, 1)
                         .orderByAsc(Menu::getRank)
         );
-        return buildRouteTree(all, 0L);
+
+        // 预查所有角色-菜单关联，构建 menuId -> roleKey 列表 和 menuId -> 授权角色ID集合
+        List<RoleMenu> allRoleMenus = roleMenuMapper.selectList(new LambdaQueryWrapper<>());
+        Map<Long, Set<Long>> menuRoleIdMap = allRoleMenus.stream()
+                .collect(Collectors.groupingBy(RoleMenu::getMenuId,
+                        Collectors.mapping(RoleMenu::getRoleId, Collectors.toSet())));
+
+        // 所有启用的角色，用于 roleId -> roleKey 映射
+        List<Role> allRoles = roleMapper.selectList(
+                new LambdaQueryWrapper<Role>().eq(Role::getStatus, 1));
+        Map<Long, String> roleIdKeyMap = allRoles.stream()
+                .collect(Collectors.toMap(Role::getId, Role::getRoleKey));
+
+        // 预查所有按钮类型节点，用于构建 parentId -> permission 列表
+        List<Menu> buttonMenus = menuMapper.selectList(
+                new LambdaQueryWrapper<Menu>()
+                        .eq(Menu::getMenuType, 1)
+                        .eq(Menu::getStatus, 1)
+                        .isNotNull(Menu::getPermission));
+        // parentId -> 所有子按钮权限
+        Map<Long, List<Menu>> buttonsByParent = buttonMenus.stream()
+                .collect(Collectors.groupingBy(Menu::getParentId));
+
+        return buildRouteTree(all, 0L, menuRoleIdMap, roleIdKeyMap, buttonsByParent);
     }
 
     @Override
@@ -321,7 +374,9 @@ public class SystemServiceImpl implements SystemService {
         return ids;
     }
 
-    private List<Map<String, Object>> buildRouteTree(List<Menu> all, Long parentId) {
+    private List<Map<String, Object>> buildRouteTree(List<Menu> all, Long parentId,
+            Map<Long, Set<Long>> menuRoleIdMap, Map<Long, String> roleIdKeyMap,
+            Map<Long, List<Menu>> buttonsByParent) {
         return all.stream()
                 .filter(m -> parentId.equals(m.getParentId()))
                 .map(m -> {
@@ -334,34 +389,41 @@ public class SystemServiceImpl implements SystemService {
                     meta.put("title", m.getTitle());
                     if (m.getIcon() != null) meta.put("icon", m.getIcon());
                     if (m.getRank() != null) meta.put("rank", m.getRank());
-                    if (m.getRoles() != null && !m.getRoles().isEmpty()) {
-                        List<String> roleList = parseJsonArray(m.getRoles());
-                        if (!roleList.isEmpty()) meta.put("roles", roleList);
-                    }
-                    if (m.getAuths() != null && !m.getAuths().isEmpty()) {
-                        List<String> authList = parseJsonArray(m.getAuths());
-                        if (!authList.isEmpty()) meta.put("auths", authList);
-                    }
+
+                    // 动态生成 roles：从 t_role_menu 查出拥有该菜单权限的角色 key 列表
+                    Set<Long> roleIds = menuRoleIdMap.getOrDefault(m.getId(), Collections.emptySet());
+                    List<String> roles = roleIds.stream()
+                            .map(roleIdKeyMap::get)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+                    if (!roles.isEmpty()) meta.put("roles", roles);
+
+                    // 动态生成 auths：查该菜单下 button 类型子节点的 permission，
+                    // 仅保留被角色关联的（即 t_role_menu 中有记录的）
+                    List<Menu> childButtons = buttonsByParent.getOrDefault(m.getId(), Collections.emptyList());
+                    List<String> auths = childButtons.stream()
+                            .filter(btn -> {
+                                Set<Long> btnRoles = menuRoleIdMap.getOrDefault(btn.getId(), Collections.emptySet());
+                                return !btnRoles.isEmpty();
+                            })
+                            .map(Menu::getPermission)
+                            .filter(Objects::nonNull)
+                            .distinct()
+                            .collect(Collectors.toList());
+                    if (!auths.isEmpty()) meta.put("auths", auths);
+
                     // pure-admin 的 filterTree 检查 meta.showLink !== false，必须放入 meta
                     if (m.getShowLink() != null) meta.put("showLink", m.getShowLink() == 1);
                     route.put("meta", meta);
 
-                    List<Map<String, Object>> children = buildRouteTree(all, m.getId());
+                    List<Map<String, Object>> children = buildRouteTree(all, m.getId(),
+                            menuRoleIdMap, roleIdKeyMap, buttonsByParent);
                     if (!children.isEmpty()) {
                         route.put("children", children);
                     }
                     return route;
                 })
                 .collect(Collectors.toList());
-    }
-
-    private List<String> parseJsonArray(String json) {
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<String>>() {});
-        } catch (Exception e) {
-            log.warn("解析JSON数组失败: {}", json);
-            return Collections.emptyList();
-        }
     }
 
     // ========== 内容库 ==========

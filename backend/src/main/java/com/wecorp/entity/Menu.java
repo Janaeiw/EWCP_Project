@@ -28,9 +28,9 @@ public class Menu {
     @TableField("`rank`")
     private Integer rank;
 
-    private String roles;
+    private Integer menuType;
 
-    private String auths;
+    private String permission;
 
     private Integer showLink;
 
