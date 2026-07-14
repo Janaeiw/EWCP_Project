@@ -209,21 +209,17 @@ function initRouter() {
       });
     } else {
       return new Promise(resolve => {
-        getAsyncRoutes().then(({ code, data }) => {
-          if (code === 0 && Array.isArray(data)) {
-            handleAsyncRoutes(cloneDeep(data));
-            storageLocal().setItem(key, data);
-          }
+        getAsyncRoutes().then(({ data }) => {
+          handleAsyncRoutes(cloneDeep(data));
+          storageLocal().setItem(key, data);
           resolve(router);
         });
       });
     }
   } else {
     return new Promise(resolve => {
-      getAsyncRoutes().then(({ code, data }) => {
-        if (code === 0 && Array.isArray(data)) {
-          handleAsyncRoutes(cloneDeep(data));
-        }
+      getAsyncRoutes().then(({ data }) => {
+        handleAsyncRoutes(cloneDeep(data));
         resolve(router);
       });
     });
@@ -239,11 +235,7 @@ function formatFlatteningRoutes(routesList: RouteRecordRaw[]) {
   if (routesList.length === 0) return routesList;
   let hierarchyList = buildHierarchyTree(routesList);
   for (let i = 0; i < hierarchyList.length; i++) {
-    // 只拼接叶子路由的 children（有 component 的路由），
-    // 对无 component 的父路由（如 /system）不拼接其 children 到顶级，
-    // 避免子路由同时以嵌套和顶级方式注册，导致 Vue Router 优先匹配嵌套路径
-    // 但父路由无组件而渲染失败
-    if (hierarchyList[i].children && hierarchyList[i].component) {
+    if (hierarchyList[i].children) {
       hierarchyList = hierarchyList
         .slice(0, i + 1)
         .concat(hierarchyList[i].children, hierarchyList.slice(i + 1));

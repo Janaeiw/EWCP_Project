@@ -328,6 +328,7 @@ public class SystemServiceImpl implements SystemService {
                     Map<String, Object> route = new LinkedHashMap<>();
                     route.put("path", m.getPath());
                     if (m.getName() != null) route.put("name", m.getName());
+                    if (m.getComponent() != null) route.put("component", m.getComponent());
 
                     Map<String, Object> meta = new LinkedHashMap<>();
                     meta.put("title", m.getTitle());
@@ -348,10 +349,6 @@ public class SystemServiceImpl implements SystemService {
                     List<Map<String, Object>> children = buildRouteTree(all, m.getId());
                     if (!children.isEmpty()) {
                         route.put("children", children);
-                    } else {
-                        // 有 component 的叶子菜单才输出 component，
-                        // 有 children 的菜单不输出 component，让 Vue Router 当 pass-through 路由
-                        if (m.getComponent() != null) route.put("component", m.getComponent());
                     }
                     return route;
                 })
