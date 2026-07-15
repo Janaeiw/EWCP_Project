@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/refresh-token").permitAll()
                         .requestMatchers("/api/system/**").permitAll()  // 临时放开，后续加权限校验
                         .requestMatchers("/api/image/**").permitAll()  // 图片上传/访问，无需认证
                         .requestMatchers("/api/video/**").permitAll()  // 视频上传/访问，无需认证
