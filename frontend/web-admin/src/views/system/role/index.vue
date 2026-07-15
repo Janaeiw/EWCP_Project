@@ -180,13 +180,10 @@ const handlePermSave = async () => {
   if (currentRoleId.value === null) return;
   const tree = permTreeRef.value;
   if (!tree) return;
-  // 合并已勾选和半选中的节点（半选 = 父节点部分子节点被勾选）
   const checkedKeys = tree.getCheckedKeys() as number[];
-  const halfCheckedKeys = tree.getHalfCheckedKeys() as number[];
-  const allKeys = [...new Set([...checkedKeys, ...halfCheckedKeys])];
   permSaving.value = true;
   try {
-    const res = await saveRoleMenus(currentRoleId.value, allKeys);
+    const res = await saveRoleMenus(currentRoleId.value, checkedKeys);
     if (res.code === 0) {
       ElMessage.success("权限保存成功");
       permDialogVisible.value = false;
