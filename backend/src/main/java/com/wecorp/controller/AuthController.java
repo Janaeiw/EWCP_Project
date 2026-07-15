@@ -113,30 +113,29 @@ public class AuthController {
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         List<String> userRoles = getCurrentUserRoles(authHeader);
 
-        List<Map<String, Object>> routeTree;
-        if (userRoles.contains("admin")) {
-            routeTree = systemService.getRouteTree();
-        } else {
-            Set<Long> roleIds = userRoles.stream()
-                    .flatMap(roleKey -> {
-                        Role role = roleMapper.selectOne(
-                                new LambdaQueryWrapper<Role>().eq(Role::getRoleKey, roleKey));
-                        return role != null ? Stream.of(role.getId()) : Stream.empty();
-                    })
-                    .collect(Collectors.toSet());
-            if (roleIds.isEmpty()) {
-                return R.ok(List.of());
-            }
-            List<RoleMenu> roleMenus = roleMenuMapper.selectList(
-                    new LambdaQueryWrapper<RoleMenu>().in(RoleMenu::getRoleId, roleIds));
-            Set<Long> menuIds = roleMenus.stream()
-                    .map(RoleMenu::getMenuId).collect(Collectors.toSet());
-            if (menuIds.isEmpty()) {
-                return R.ok(List.of());
-            }
-            routeTree = systemService.getRouteTreeByMenuIds(menuIds);
+        if (userRoles.isEmpty()) {
+            return R.ok(List.of());
         }
-        return R.ok(routeTree);
+
+        // 统一从 t_role_menu 查询角色关联的菜单ID（admin 也走此路径）
+        Set<Long> roleIds = userRoles.stream()
+                .flatMap(roleKey -> {
+                    Role role = roleMapper.selectOne(
+                            new LambdaQueryWrapper<Role>().eq(Role::getRoleKey, roleKey));
+                    return role != null ? Stream.of(role.getId()) : Stream.empty();
+                })
+                .collect(Collectors.toSet());
+        if (roleIds.isEmpty()) {
+            return R.ok(List.of());
+        }
+        List<RoleMenu> roleMenus = roleMenuMapper.selectList(
+                new LambdaQueryWrapper<RoleMenu>().in(RoleMenu::getRoleId, roleIds));
+        Set<Long> menuIds = roleMenus.stream()
+                .map(RoleMenu::getMenuId).collect(Collectors.toSet());
+        if (menuIds.isEmpty()) {
+            return R.ok(List.of());
+        }
+        return R.ok(systemService.getRouteTreeByMenuIds(menuIds));
     }
 
     private List<String> getCurrentUserRoles(String authHeader) {
